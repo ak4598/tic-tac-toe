@@ -5,6 +5,8 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 
+
+
 public class GUI implements ActionListener, MouseListener{
 	
 	// variables for the GUI

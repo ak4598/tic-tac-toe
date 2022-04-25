@@ -24,6 +24,8 @@ public class client {
 	
 	private rule r = new rule();
 	
+	private boolean otherMsg = false;
+	
 	private void connect() {
 		try {
 			s = new Socket(serverIP, port);
@@ -62,7 +64,6 @@ public class client {
 			catch (Exception e) {
 				System.out.println(String.format("Player %d: Start message error!", playerID));
 				e.printStackTrace();
-//				System.exit(0);
 			}
 		}
 		
@@ -75,6 +76,7 @@ public class client {
 					}
 					
 					else {
+						s.setSoTimeout(0);
 						opponentMove.x = this.dataIn.readInt();
 						opponentMove.y = this.dataIn.readInt();
 						System.out.println(String.format("Player %d: Opponent's move is (%d, %d)!", playerID, opponentMove.x, opponentMove.y));
@@ -85,15 +87,17 @@ public class client {
 						end = this.dataIn.readBoolean();
 						
 						if (win) {
+							otherMsg = true;
 							board.winMessage(!win);
+							System.exit(0);
 							board.TMessage.setText("You lose.");
-							break;
 						}
 						
 						if (end) {
+							otherMsg = true;
 							board.drawMessage();
+							System.exit(0);
 							board.TMessage.setText("Draw.");
-							break;
 						}
 						
 						board.setYourTurn(true);
@@ -105,16 +109,15 @@ public class client {
 			catch (Exception e) {
 				System.out.println(String.format("Player %d: Cannot get opponent move!", playerID));
 				e.printStackTrace();
+				if (!otherMsg) {					
+					board.disconnectedMessage();
+					board.TMessage.setText("Game ends. Your opponent lefts.");
+					System.exit(0);
+				}
+				board.setYourTurn(false);
 //				System.exit(0);
 			}
-			
-
 		}
-		
-//		public void gameEnd() {
-//			
-//		}
-
 	}
 	
 	private class WriteToServer implements Runnable{
@@ -138,23 +141,51 @@ public class client {
 			catch (Exception e) {
 				System.out.println(String.format("Player %d: Cannot send name!", playerID));
 				e.printStackTrace();
-//				System.exit(0);
 			}
 		}
 		
 		@Override
 		public void run() {
-			try {
-				while(true) {
+			while(true) {
+
 					if(board.getYourTurn()) {
 						
 						Point move = board.getLatestMove();
 						
-						
 						while(move.x == lastMove.x && move.y == lastMove.y) {
+							try {
+								s.setSoTimeout(100);
+							} catch (SocketException e1) {
+								e1.printStackTrace();
+							}
+							int heartbeat = 0;
+							
+							try {
+								heartbeat = s.getInputStream().read();
+							}
+							catch (SocketException se){
+								System.out.println("dllm");
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							
+							if (heartbeat == -1) {
+								if (!otherMsg) {									
+									board.disconnectedMessage();
+									board.TMessage.setText("Game ends. Your opponent lefts.");
+								}
+								board.setYourTurn(false);
+								System.exit(0);
+							}
+							
 							move = board.getLatestMove();
-							Thread.sleep(10);
+							try {
+								Thread.sleep(10);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
 						}
+						
 						
 						board.TMessage.setText("Valid Move, wait for your opponent.");
 						
@@ -164,44 +195,54 @@ public class client {
 						
 						
 						board.setYourTurn(false);
-						this.dataOut.writeInt(move.x);
-						this.dataOut.writeInt(move.y);
-						System.out.println(String.format("Player %d: Latest move is (%d, %d)!", playerID, move.x, move.y));
-						
-						win = r.checkWin(board);
-						this.dataOut.writeBoolean(win);
-						System.out.println(String.format("Player %d: Latest win status is %b!", playerID, win));
-						
-						end = r.checkEnd(board);
-						this.dataOut.writeBoolean(end);
-						System.out.println(String.format("Player %d: Latest end status is %b!", playerID, end));
-						
-						if(win) {
-							board.winMessage(win);
-							board.TMessage.setText("You Win.");
-							break;
+						try {
+							
+							this.dataOut.writeInt(move.x);
+							this.dataOut.writeInt(move.y);
+							System.out.println(String.format("Player %d: Latest move is (%d, %d)!", playerID, move.x, move.y));
+							
+							win = r.checkWin(board);
+							this.dataOut.writeBoolean(win);
+							System.out.println(String.format("Player %d: Latest win status is %b!", playerID, win));
+							
+							end = r.checkEnd(board);
+							this.dataOut.writeBoolean(end);
+							System.out.println(String.format("Player %d: Latest end status is %b!", playerID, end));
+							
+							if(win) {
+								otherMsg = true;
+								board.winMessage(win);
+								System.exit(0);
+								board.TMessage.setText("You Win.");
+							}
+							
+							if(end) {
+								otherMsg = true;
+								board.drawMessage();
+								System.exit(0);
+								board.TMessage.setText("Draw.");
+							}
 						}
-												
-						if(end) {
-							board.drawMessage();
-							board.TMessage.setText("Draw.");
-							break;
+						catch (Exception e) {
+							System.out.println(String.format("Player %d: Cannot send move!", playerID));
+							e.printStackTrace();
+							System.exit(0);
 						}
 						
-						}
+					}
 					else {
-						Thread.sleep(10);
+						try {							
+							Thread.sleep(10);
+						}
+						catch (Exception e) {
+							
+						}
 					}
 				}
-				
-			}
-			catch (Exception e) {
-				System.out.println(String.format("Player %d: Cannot send move!", playerID));
-				e.printStackTrace();
-//				System.exit(0);
+
 			}
 		}
-	}
+	
 	
 	
 	public static void main(String[] args) {

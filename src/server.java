@@ -16,11 +16,11 @@ public class server {
 	private Socket[] players = new Socket[maxPlayers];
 	private ReadFromClient[] playersRead = new ReadFromClient[maxPlayers];
 	private WriteToClient[] playersWrite = new WriteToClient[maxPlayers];
+	
 	private String[] playersList = new String[maxPlayers];
 	
 	private Point[] playersMove = { new Point(-1, -1), new Point(-1, -1) };
 	private boolean[] movedStatus = { false, false };
-	
 	
 	private boolean gameWon = false;
 	private boolean gameEnd = false;
@@ -56,6 +56,7 @@ public class server {
 				players[numPlayers-1] = s;
 				playersRead[numPlayers-1] = read;
 				playersWrite[numPlayers-1] = write;
+				
 			}
 			System.out.println("Server: Max connections reached, no longer accept connections!");			
 			
@@ -79,16 +80,14 @@ public class server {
 			System.out.println(String.format("Server: Reading thread for player %d is created.", this.playerID));
 		}
 
-//		@Override
-//		public void run() {
-//			
-//		}
-		
+
+		@Override
 		public void run() {
 			
 			try {
 				while(true) {
 					if(!movedStatus[playerID-1]) {
+//						this.dataIn.readUTF();
 						
 						Point playerMove = new Point(-1, -1);
 						
@@ -117,15 +116,28 @@ public class server {
 						Thread.sleep(10);
 					}
 				}
-				
-				
-
 			}
 			catch (Exception e) {
 				System.out.println(String.format("Server: Cannot read from player %d!", this.playerID));
 				e.printStackTrace();
-
-//				System.exit(0);
+				
+				try {
+					if (this.playerID == 1) {	
+						players[1].close();
+						System.out.println("Closed connection of player 2!");
+					}
+					
+					else if (this.playerID == 2) {
+						players[0].close();
+						System.out.println("Closed connection of player 1!");
+					}
+				}
+				catch (Exception e1) {
+					System.out.println("Cannot close connection!");
+				}
+				
+				
+				System.exit(0);
 			}
 			
 		}
@@ -145,7 +157,7 @@ public class server {
 			catch (Exception e) {
 				System.out.println(String.format("Server: Cannot read player %d's name!", playerID));
 				e.printStackTrace();
-//				System.exit(0);
+				System.exit(0);
 			}
 		}
 
@@ -196,29 +208,27 @@ public class server {
 					}
 					
 					this.dataOut.writeBoolean(gameWon);
-					System.out.println(String.format("Server: Wrote game win status - %b from player %d!", gameWon, playerID));
+					System.out.println(String.format("Server: Wrote game win status - %b to player %d!", gameWon, playerID));
 					
 					this.dataOut.writeBoolean(gameEnd);
-					System.out.println(String.format("Server: Wrote game end status - %b from player %d!", gameEnd, playerID));
+					System.out.println(String.format("Server: Wrote game end status - %b to player %d!", gameEnd, playerID));
 					
 					if (gameWon) {
-						break;
+						System.exit(0);
 					}
 					
 					if (gameEnd) {
-						break;
+						System.exit(0);
 					}
-					
 					
 					this.dataOut.flush();
 				}
-				
-				
+
 			}
 			catch (Exception e) {
 				System.out.println(String.format("Server: Cannot write player %d's move!", playerID));
 				e.printStackTrace();
-//				System.exit(0);
+				System.exit(0);
 			}
 			
 		}
@@ -232,9 +242,10 @@ public class server {
 			catch (Exception e) {
 				System.out.println(String.format("Server: Cannot send start message to player %d!", this.playerID));
 				e.printStackTrace();
-//				System.exit(0);
+				System.exit(0);
 			}
 		}
+		
 	}
 
 	public static void main(String[] args) {
@@ -254,6 +265,7 @@ public class server {
 		
 		Thread p1WriteThread = new Thread(gameServer.playersWrite[0]);
 		Thread p2WriteThread = new Thread(gameServer.playersWrite[1]);
+		
 		
 		p1ReadThread.start();
 		p2ReadThread.start();
