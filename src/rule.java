@@ -1,7 +1,13 @@
-import java.awt.*;
-import javax.swing.*;
 
+/**
+ * Creates the set of rules to evaluate the result.
+ * @author Kwan Man Hei
+ */
 public class rule {
+	
+    /**
+     * Constructs the rules.
+     */
 	public rule() {
 	}
 	
@@ -50,6 +56,11 @@ public class rule {
 		return false;
 	}
 	
+    /**
+     * Determine the game is ended or not.
+     * @param board the game board.
+     * @return The end status of the game.
+     */
 	public boolean checkEnd(GUI board) {
 		for (int row = 0; row < 3; row++) {
 			for (int col = 0; col < 3; col++) {
@@ -62,6 +73,11 @@ public class rule {
 		return true;
 	}
 	
+    /**
+     * Determine any win condition achieved.
+     * @param board the game board.
+     * @return The win status of the game.
+     */
 	public boolean checkWin(GUI board) {
 		
 		// the winner must be the player at that turn		

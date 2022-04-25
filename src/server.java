@@ -3,7 +3,10 @@ import java.awt.Point;
 import java.io.*;
 import java.net.*;
 
-
+/**
+ * Server of the game
+ * @author Kwan Man Hei
+ */
 public class server {
 	
 	private ServerSocket gameServer;
@@ -25,6 +28,9 @@ public class server {
 	private boolean gameWon = false;
 	private boolean gameEnd = false;
 	
+    /**
+     * Constructs the server.
+     */
 	public server() {
 		try {
 			gameServer = new ServerSocket(port);
@@ -39,6 +45,9 @@ public class server {
 		
 	}
 	
+    /**
+     * Starts the server.
+     */
 	public void startServer() {
 		try {
 			while(numPlayers < maxPlayers) {
@@ -70,6 +79,9 @@ public class server {
 		
 	}
 
+    /**
+     * Read data from the client.
+     */
 	private class ReadFromClient implements Runnable{
 		private int playerID;
 		private DataInputStream dataIn;
@@ -163,6 +175,9 @@ public class server {
 
 	}
 	
+    /**
+     * Write data to the client.
+     */
 	private class WriteToClient implements Runnable{
 		private int playerID;
 		private DataOutputStream dataOut;
@@ -248,6 +263,10 @@ public class server {
 		
 	}
 
+	/**
+	 * Start the server.
+	 * @param args the command line arguments.
+	 **/
 	public static void main(String[] args) {
 		
 		server gameServer = new server();

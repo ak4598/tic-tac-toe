@@ -3,6 +3,10 @@ import java.awt.Point;
 import java.io.*;
 import java.net.*;
 
+/**
+ * Client of the game
+ * @author Kwan Man Hei
+ */
 public class client {
 	
 	private int playerID;
@@ -26,6 +30,16 @@ public class client {
 	
 	private boolean otherMsg = false;
 	
+    /**
+     * Constructs the client.
+     */
+	public client() {
+		
+	}
+	
+    /**
+     * Connects to the server.
+     */
 	private void connect() {
 		try {
 			s = new Socket(serverIP, port);
@@ -47,6 +61,9 @@ public class client {
 		}
 	}
 	
+    /**
+     * Read data from the server.
+     */
 	private class ReadFromServer implements Runnable{
 		private DataInputStream dataIn;
 		
@@ -120,6 +137,9 @@ public class client {
 		}
 	}
 	
+    /**
+     * Write data to the server.
+     */
 	private class WriteToServer implements Runnable{
 		private DataOutputStream dataOut;
 		
@@ -244,7 +264,10 @@ public class client {
 		}
 	
 	
-	
+	/**
+	 * Start the client.
+	 * @param args the command line arguments.
+	 **/
 	public static void main(String[] args) {
 		client player = new client();
 		player.connect();
@@ -270,6 +293,3 @@ public class client {
 		
 	}
 }
-
-
-

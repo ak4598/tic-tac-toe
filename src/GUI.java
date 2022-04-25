@@ -6,7 +6,10 @@ import java.awt.*;
 import java.awt.event.*;
 
 
-
+/**
+ * Online Tic-Tac-Roe game with 2 players
+ * @author Kwan Man Hei
+ */
 public class GUI implements ActionListener, MouseListener{
 	
 	// variables for the GUI
@@ -47,6 +50,10 @@ public class GUI implements ActionListener, MouseListener{
 	
 	Point latestMove = new Point(-1, -1);
 	
+    /**
+     * Constructs the game GUI.
+     * * @param id player's id.
+     */
 	public GUI(int id) {
 		
 		this.playerID = id;
@@ -95,22 +102,42 @@ public class GUI implements ActionListener, MouseListener{
 		board.setVisible(true);
 	}
 	
+    /**
+     * Get the name of the player.
+     * @return The name of the player.
+     */
 	public String getName() {
 		return this.playerName;
 	}
 	
+    /**
+     * Get the last move of the player.
+     * @return The last move of the player.
+     */
 	public Point getLatestMove() {
 		return this.latestMove;
 	}
 	
+    /**
+     * Get whether is the player turn.
+     * @return Boolean indicating is player turn.
+     */
 	public boolean getYourTurn() {
 		return this.yourTurn;
 	}	
 	
+    /**
+     * Set the boolean of player turn.
+     * @param b boolean of player turn.
+     */
 	public void setYourTurn(boolean b) {
 		this.yourTurn = b;
 	}
 	
+    /**
+     * Draw opponent's move on player's board
+     * @param opponentMove opponent's move.
+     */
 	public void drawGrid(Point opponentMove) {
 		
 		this.grids[opponentMove.x][opponentMove.y].setHorizontalAlignment(SwingConstants.CENTER);
@@ -128,6 +155,10 @@ public class GUI implements ActionListener, MouseListener{
 		}
 	}
 	
+    /**
+     * Create message box with player's winning/losing message.
+     * @param win player's winning status.
+     */
 	public void winMessage(boolean win) {	    
 	    String message;
 		
@@ -143,6 +174,9 @@ public class GUI implements ActionListener, MouseListener{
 	    setYourTurn(false);
 	}
 	
+    /**
+     * Create message box with draw message.
+     */
 	public void drawMessage() {
 	    String message = "Draw.";
 	    
@@ -150,6 +184,9 @@ public class GUI implements ActionListener, MouseListener{
 	    setYourTurn(false);
 	}
 	
+    /**
+     * Create message box with opponent disconnected message.
+     */
 	public void disconnectedMessage() {
 	    String message = "Game ends. Your opponent lefts.";
 	    
@@ -157,6 +194,10 @@ public class GUI implements ActionListener, MouseListener{
 	    setYourTurn(false);
 	}
 	
+    /**
+     * Action listener for all possible actions on the game board except game field.
+     * @param e action event.
+     */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == exit) {
@@ -186,7 +227,10 @@ public class GUI implements ActionListener, MouseListener{
 		
 	}
 
-
+    /**
+     * Mouse clicked listener for all possible actions on the game field.
+     * @param e mouse event.
+     */
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if (!yourTurn) {
@@ -229,19 +273,30 @@ public class GUI implements ActionListener, MouseListener{
 		}
 	}
 
-
+    /**
+     * Mouse pressed listener for all possible actions on the game field.
+     * @param e action event.
+     */
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
-
+    /**
+     * Mouse released listener for all possible actions on the game field.
+     * @param e action event.
+     */
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
+	
+    /**
+     * Mouse entered listener for all possible actions on the game field.
+     * @param e action event.
+     */
 
 
 	@Override
@@ -249,6 +304,11 @@ public class GUI implements ActionListener, MouseListener{
 		// TODO Auto-generated method stub
 		
 	}
+	
+    /**
+     * Mouse exited listener for all possible actions on the game field.
+     * @param e action event.
+     */
 
 
 	@Override
